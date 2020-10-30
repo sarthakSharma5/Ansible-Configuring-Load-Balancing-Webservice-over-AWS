@@ -1,0 +1,50 @@
+- hosts: localhost
+  vars_files:
+          - usrcred.yml
+  tasks:
+          - name: Launch EC2 instances for Webservers
+            ec2:
+                    region: "ap-south-1"
+                    image: "<AMI ID>"                 # eg., ami-0e306788ff2473ccb
+                    instance_type: "t2.micro"
+                    count: 3
+                    vpc_subnet_id: "<Subnet ID>"
+                    group_id: "<Security-Group ID 1>"
+                    instance_tags:
+                            Name: "webserver"
+                            user: "ansible"
+                    key_name: "<key-pair>"
+                    assign_public_ip: yes
+                    state: present
+                    wait: yes
+                    aws_access_key: "{{ AWS_ACCESS_KEY }}"
+                    aws_secret_key: "{{ AWS_SECRET_KEY }}"
+            register: instn
+          - debug:
+                  msg:
+                          - "Webserver1: {{ instn.instances[0].public_ip }}"
+                          - "Webserver2: {{ instn.instances[1].public_ip }}"
+                          - "Webserver3: {{ instn.instances[2].public_ip }}"
+
+          - name: Launch EC2 instance for LoadBalancer
+            ec2:
+                    region: "ap-south-1"
+                    image: "<AMI ID>"                 # eg., ami-0e306788ff2473ccb
+                    instance_type: "t2.micro"
+                    count: 1
+                    vpc_subnet_id: "<Subnet ID>"
+                    group_id: "<Security-Group ID 2>"
+                    instance_tags:
+                    instance_tags:
+                            Name: "loadbalancer"
+                            user: "ansible"
+                    key_name: "<key-pair>"
+                    assign_public_ip: yes
+                    state: present
+                    wait: yes
+                    aws_access_key: "{{ AWS_ACCESS_KEY }}"
+                    aws_secret_key: "{{ AWS_SECRET_KEY }}"
+            register: instn
+          - debug:
+                  var: instn.instances[0].public_ip
+

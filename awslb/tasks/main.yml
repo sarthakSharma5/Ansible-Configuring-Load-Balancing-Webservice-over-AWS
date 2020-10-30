@@ -1,0 +1,21 @@
+---
+# tasks file for awslb
+- name: install HAProxy software
+  package:
+          name: "haproxy"
+          state: present
+  become: yes
+
+- name: configure HAProxy using local template
+  template:
+          src: "haproxy.cfg"
+          dest: "/etc/haproxy/haproxy.cfg"
+  notify: restart HAProxy service
+  become: yes
+
+- name: start HAProxy service
+  service:
+          name: "haproxy"
+          state: started
+  become: yes
+

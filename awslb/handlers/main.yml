@@ -1,0 +1,8 @@
+---
+# handlers file for awslb
+- name: restart HAProxy service
+  service:
+          name: "haproxy"
+          state: restarted
+  become: yes
+
